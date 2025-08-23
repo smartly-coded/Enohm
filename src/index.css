@@ -2,71 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* في ملف index.css - إضافة هذا الكود */
 
-  color-scheme: light dark;
-  color: rgb(255, 255, 255);
-  background-color: #ffffff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* تعديل #root ليأخذ العرض الكامل */
+#root {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* إضافة container للصفحات التي تحتاج عرض محدود */
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
+/* حل خاص لـ full width sections */
+.full-width-section {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+/* للتأكد من أن body يأخذ العرض الكامل */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  min-width: 100%;
+  width: 100%;
+  overflow-x: auto; /* بدلاً من hidden */
+}
+.border-animate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid #F2A057;
+  border-radius: 0.5rem; /* نفس rounded-lg */
+  clip-path: inset(0 100% 0 0);
+  animation: drawBorder 0.8s linear forwards;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+@keyframes drawBorder {
+  0% {
+    clip-path: inset(0 100% 0 0); /* مختفي من اليمين */
+  }
+  25% {
+    clip-path: inset(0 0 100% 0); /* يرسم الخط السفلي */
+  }
+  50% {
+    clip-path: inset(0 0 0 100%); /* يرسم الخط الشمال */
+  }
+  100% {
+    clip-path: inset(0 0 0 0); /* يظهر المستطيل كامل */
+  }
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+html {
+  width: 100%;
+  overflow-x: auto;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto/Roboto-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
 }

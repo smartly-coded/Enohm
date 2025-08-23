@@ -1,8 +1,11 @@
 import React from "react";
 import { Button } from "../components/ui/button";
 import Bottombar from "../components/Bottombar";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-white">
       <style >{`
@@ -124,7 +127,7 @@ const Home = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center min-h-screen py-12 lg:py-20">
             <div className="max-w-3xl space-y-6 lg:space-y-8">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white drop-shadow-lg animate-fade-in-up">
+              <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold leading-tight text-white drop-shadow-lg animate-fade-in-up">
                 Solarlösungen für Ihre effiziente Energieversorgung- Enohm GmbH
               </h1>
               
@@ -135,12 +138,14 @@ const Home = () => {
               </p>
               
             <div className="pt-4 animate-fade-in-up animation-delay-400">
-                <Button 
-                  variant="hero" 
-                  className="text-lg px-8 py-4 bg-[#F2A057]  text-white hover:bg-[#1d4b73]  border-2"
-                >
-                  RUFEN SIE AN
-                </Button>
+         <Button
+  onClick={() => navigate("/kontakt")}
+  variant="hero"
+  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
+>
+  <span className="relative z-10">RUFEN SIE AN</span>
+  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+</Button>
               </div>
             </div>
           </div>
@@ -151,10 +156,10 @@ const Home = () => {
       <section className="py-12 md:py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-blue-900">
+  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
               Photovoltaik-Systeme in Dresden und ganz Deutschland
-            </h2>
-            <p className="text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
+            </h3>
+            <p className="text-base max-w-2xl mx-auto text-center md:text-lg lg:text-xl text-gray-600 leading-relaxed">
               Entdecken Sie bei Enohm GmbH eine Vielfalt an Lösungen für Ihre Solaranlage, 
               egal ob für Zuhause oder Ihr Gewerbe. Nutzen Sie die Kraft der Sonne und decken 
               Sie Ihren Energiebedarf nachhaltig und kostengünstig. Beginnen Sie Ihre grüne 
@@ -170,17 +175,17 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
             {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] animate-fade-in-left">
+            <div className="w-full h-64 sm:h-80 lg:h-80">
               <img 
                 src="/images/Enohm-GmbH.jpg" 
-                alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover rounded-lg shadow-lg hover-shadow hover-scale"
+                alt="Photovoltaik Systeme"  
+                className="w-full h-80"
               />
             </div>
 
             {/* Right Side - Text */}
             <div className="space-y-6 text-center lg:text-left animate-fade-in-right">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-900">
+              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
                 Energielösungen für eine grüne und effiziente Zukunft
               </h3>
               <p className="text-base md:text-lg text-gray-600 leading-relaxed">
@@ -198,7 +203,7 @@ const Home = () => {
             
             {/* Right Side - Text */}
             <div className="space-y-6 text-center lg:text-left order-2 lg:order-1 animate-fade-in-left">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-900">
+              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
                 Zukunftsorientierte Solaranlagen für Nachhaltigkeit
               </h3>
               <p className="text-base md:text-lg text-gray-600 leading-relaxed">
@@ -207,11 +212,11 @@ const Home = () => {
             </div>
 
             {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] order-1 lg:order-2 animate-fade-in-right">
+            <div className="w-full h-64 sm:h-80 lg:h-80 order-1 lg:order-2">
               <img 
                 src="/images/Enohm-GmbH-5.jpg" 
                 alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover rounded-lg shadow-lg hover-shadow hover-scale"
+                className="w-full h-80"
               />
             </div>
           </div>
@@ -278,42 +283,49 @@ const Home = () => {
             
             {/* Left Side */}
             <div className="space-y-4 animate-slide-in">
-              <div className="overflow-hidden rounded-lg shadow-lg">
+              <div className="overflow-hidden">
                 <img 
                   src="/images/Enohm-GmbH-Leistungen.jpg" 
                   alt="Solarlösungen Leistungen" 
-                  className="w-full h-64 sm:h-72 lg:h-80 object-cover hover-scale"
+                  className="w-full h-64 sm:h-72 lg:h-80"
                 />
               </div>
-              <h3 className="text-xl md:text-[24px] font-bold text-[#1D4B73] text-left">
+              <h3 className="text-xl  md:text-[24px] font-bold text-[#1D4B73] text-left ">
                 Leistungen
               </h3>
-              <Button 
-                variant="default" 
-                 className="px-6 py-3 bg-[#F2A057] hover:bg-[#1d4b73] text-white rounded-lg shadow"
+              <Link to="/leistungen">
+              
+                 <Button 
+                variant="hero" 
+                className="group relative overflow-hidden px-6 py-3 mt-5 bg-[#F2A057] hover:bg-[#1d4b73] text-white"
               >
-                MEHR
-              </Button>
+                <span className="relative z-10">MEHR</span>
+
+  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+              </Button></Link>
             </div>
 
             {/* Right Side */}
             <div className="space-y-4 animate-slide-in animation-delay-200">
-              <div className="overflow-hidden rounded-lg shadow-lg">
+              <div className="overflow-hidden">
                 <img 
                   src="/images/Enohm-GmbH-Kontakt.jpg" 
                   alt="Solarlösungen Kontakt" 
-                  className="w-full h-64 sm:h-72 lg:h-80 object-cover hover-scale"
+                  className="w-full h-64 sm:h-72 lg:h-80 "
                 />
               </div>
                <h3 className="text-lg md:text-[24px] font-bold text-[#1D4B73] text-left">
                 Kontakt
               </h3>
+              <Link to='/kontakt'>
               <Button 
-                variant="default" 
-                className="px-6 py-3 bg-[#F2A057] hover:bg-[#1d4b73] text-white rounded-lg shadow"
+                variant="hero" 
+                className="group relative overflow-hidden px-6 py-3 mt-5 bg-[#F2A057] hover:bg-[#1d4b73] text-white"
               >
-                MEHR
-              </Button>
+                <span className="relative z-10">MEHR</span>
+
+  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+              </Button></Link>
             </div>
           </div>
         </div>
@@ -351,20 +363,19 @@ const Home = () => {
               </h2>
 
               <div className="pt-4 animate-fade-in-up animation-delay-400">
-                <Button 
-                  variant="hero" 
-                  className="text-lg px-8 py-4 bg-[#F2A057]  text-white hover:bg-[#1d4b73]  border-2"
-                >
-                  RUFEN SIE AN
-                </Button>
+             <Button
+  onClick={() => navigate("/kontakt")}
+  variant="hero"
+  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
+>
+  <span className="relative z-10">RUFEN SIE AN</span>
+  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+</Button>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-
-
       {/* Footer Info Section */}
      <Bottombar/>
     </div>
