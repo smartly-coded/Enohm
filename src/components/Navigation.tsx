@@ -77,6 +77,17 @@ const borderAnimationStyles = `
     transition: height 0.3s ease;
     z-index: 1;
   }
+
+  .mobile-menu-enter {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  .mobile-menu-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 `;
 
 // إضافة الـ CSS في head
@@ -132,21 +143,17 @@ if (typeof document !== 'undefined') {
       }
     };
 
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as Element;
-      if (isOpen && target && !target.closest('nav')) {
-        setIsOpen(false);
-      }
-    };
-
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      document.addEventListener('click', handleClick);
+      // منع التمرير عند فتح القائمة
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('click', handleClick);
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -185,125 +192,124 @@ if (typeof document !== 'undefined') {
   const currentActiveItem = getCurrentActiveItem();
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50 w-full">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 xl:px-12">
-        <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18">
-          {/* Logo */}
-          <div className="flex-shrink-0 z-50">
-            <a 
-              href="/" 
-              className="flex items-center hover:scale-105 transition-transform duration-300"
-              onClick={() => handleNavClick("/")}
-            >
-              <img 
-                src="/images/cropped-gif.webp" 
-                alt="Enohm GmbH Logo"
-                className="h-8 sm:h-10 lg:h-12 w-auto"
-              />
-            </a>
-          </div>
-
-          {/* Desktop Navigation */}
-      <div className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
-  {navItems.map((item) => {
-    const isActive = currentActiveItem === item.href;
-    return (
-      <a
-        key={item.href}
-        href={item.href}
-        onClick={() => handleNavClick(item.href)}
-        className={`
-          animated-border ${isActive ? 'active' : ''}
-          px-4 py-2 lg:px-6 lg:py-3 rounded-lg text-sm lg:text-base xl:text-lg font-medium
-          transition-all duration-300 whitespace-nowrap transform hover:scale-105
-          ${isActive
-            ? 'text-[#F2A057]'
-            : 'text-[#1d4b73] hover:text-[#F2A057]'
-          }
-        `}
-      >
-        {item.label}
-        <span className="border-bottom"></span>
-        <span className="border-left"></span>
-      </a>
-    );
-  })}
-</div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden z-50">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-lg text-[#1d4b73] hover:text-[#F2A057] hover:bg-[#F2A057]/5 focus:outline-none focus:ring-2 focus:ring-[#F2A057] focus:ring-offset-2 transition-all duration-300"
-              aria-expanded={isOpen}
-              aria-label="Toggle navigation menu"
-            >
-              <span className="sr-only">Open main menu</span>
-              {/* Hamburger icon */}
-              <div className="w-6 h-6 relative">
-                <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
-                    isOpen ? 'rotate-45 translate-y-2' : 'translate-y-1'
-                  }`}
-                />
-                <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${
-                    isOpen ? 'opacity-0' : 'opacity-100'
-                  }`}
-                />
-                <span
-                  className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
-                    isOpen ? '-rotate-45 translate-y-2' : 'translate-y-3'
-                  }`}
-                />
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      <div
-        className={`md:hidden bg-white border-t border-gray-200 shadow-lg transition-all duration-300 ease-in-out ${
-          isOpen
-            ? 'max-h-screen opacity-100 visible'
-            : 'max-h-0 opacity-0 invisible overflow-hidden'
-        }`}
-      >
-        <div className="px-3 pt-3 pb-4 space-y-2">
-          {navItems.map((item, index) => {
-            const isActive = currentActiveItem === item.href;
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => handleNavClick(item.href)}
-                className={`
-                  block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 border-2
-                  ${isActive 
-                    ? 'text-[#F2A057] bg-[#F2A057]/10 border-[#F2A057]' 
-                    : 'text-[#1d4b73] hover:text-[#F2A057] hover:bg-[#F2A057]/5 border-transparent hover:border-[#F2A057]'
-                  }
-                `}
-                style={{
-                  animationDelay: isOpen ? `${index * 50}ms` : '0ms',
-                }}
+    <>
+      <nav className="bg-white shadow-lg sticky top-0 z-50 w-full">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 xl:px-12">
+          <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18">
+            {/* Logo */}
+            <div className="flex-shrink-0 z-50">
+              <a 
+                href="/" 
+                className="flex items-center hover:scale-105 transition-transform duration-300"
+                onClick={() => handleNavClick("/")}
               >
-                {item.label}
+                <img 
+                  src="/images/cropped-gif.webp" 
+                  alt="Enohm GmbH Logo"
+                  className="h-8 sm:h-10 lg:h-12 w-auto"
+                />
               </a>
-            );
-          })}
-        </div>
-      </div>
+            </div>
 
-      {/* Mobile menu overlay */}
+            {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6">
+    {navItems.map((item) => {
+      const isActive = currentActiveItem === item.href;
+      return (
+        <a
+          key={item.href}
+          href={item.href}
+          onClick={() => handleNavClick(item.href)}
+          className={`
+            animated-border ${isActive ? 'active' : ''}
+            px-4 py-2 lg:px-6 lg:py-3 rounded-lg text-sm lg:text-base xl:text-lg font-medium
+            transition-all duration-300 whitespace-nowrap transform hover:scale-105
+            ${isActive
+              ? 'text-[#F2A057]'
+              : 'text-[#1d4b73] hover:text-[#F2A057]'
+            }
+          `}
+        >
+          {item.label}
+          <span className="border-bottom"></span>
+          <span className="border-left"></span>
+        </a>
+      );
+    })}
+  </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden z-50">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-lg text-[#1d4b73] hover:text-[#F2A057] hover:bg-[#F2A057]/5 focus:outline-none focus:ring-2 focus:ring-[#F2A057] focus:ring-offset-2 transition-all duration-300"
+                aria-expanded={isOpen}
+                aria-label="Toggle navigation menu"
+              >
+                <span className="sr-only">Open main menu</span>
+                {/* Hamburger icon */}
+                <div className="w-6 h-6 relative">
+                  <span
+                    className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
+                      isOpen ? 'rotate-45 translate-y-2' : 'translate-y-1'
+                    }`}
+                  />
+                  <span
+                    className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${
+                      isOpen ? 'opacity-0' : 'opacity-100'
+                    }`}
+                  />
+                  <span
+                    className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${
+                      isOpen ? '-rotate-45 translate-y-2' : 'translate-y-3'
+                    }`}
+                  />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation Menu - Full Screen */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-25 z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 z-40 md:hidden">
+          {/* White Background */}
+          <div className="w-full h-full bg-white">
+            {/* Navigation Content */}
+        <div className="flex flex-col  h-full px-6">
+              <div className="space-y-2 mt-12 ">
+                {navItems.map((item, index) => {
+                  const isActive = currentActiveItem === item.href;
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => handleNavClick(item.href)}
+                      className={`
+                        block px-8 py-4  rounded-xl text-2xl font-semibold transition-all duration-300 
+                        mobile-menu-enter mobile-menu-enter-active
+                        ${isActive 
+                          ? 'text-[#F2A057]' 
+                          : 'text-[#1d4b73]'
+                        }
+                      `}
+                      style={{
+                        animationDelay: `${index * 100}ms`,
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
+              </div>
+              
+              {/* Close Button */}
+             
+            </div>
+          </div>
+        </div>
       )}
-    </nav>
+    </>
   );
 }

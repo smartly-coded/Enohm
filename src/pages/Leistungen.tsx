@@ -1,12 +1,155 @@
 import { Button } from "../components/ui/button";
 import Bottombar from "../components/Bottombar";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+// TypeScript interfaces
+interface ImageFormat {
+  name: string;
+  hash: string;
+  ext: string;
+  mime: string;
+  path: string | null;
+  width: number;
+  height: number;
+  size: number;
+  sizeInBytes: number;
+  url: string;
+}
+
+interface Image {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText: string | null;
+  caption: string | null;
+  width: number;
+  height: number;
+  formats: {
+    thumbnail?: ImageFormat;
+    small?: ImageFormat;
+    medium?: ImageFormat;
+    large?: ImageFormat;
+  };
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: string | null;
+  provider: string;
+  provider_metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+interface HeroSection {
+  id: number;
+  title: string;
+  subTitle: string;
+  buttonText: string;
+  backgroundImage: Image;
+}
+
+interface Service {
+  id: number;
+  serviceTitle: string | null;
+  serviceSubTitle: string | null;
+  serviceImage: Image | null;
+}
+
+interface KontaktSection {
+  id: number;
+  title: string;
+  buttonText: string;
+  icon: any;
+  backgroundImage: Image;
+}
+
+interface LeistungenPageData {
+  id: number;
+  documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  heroSection: HeroSection;
+  services: Service[];
+  kontaktSection: KontaktSection;
+}
+
+interface ApiResponse {
+  data: LeistungenPageData;
+  meta: Record<string, any>;
+}
 
 const Leistungen = () => {
-const  navigate = useNavigate();
+  const navigate = useNavigate();
+  const [pageData, setPageData] = useState<LeistungenPageData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLeistungenData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:1337/api/leistungen-page?populate[heroSection][populate]=*&populate[services][populate]=*&populate[kontaktSection][populate]=*"
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: ApiResponse = await response.json();
+        setPageData(data.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching leistungen data:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setLoading(false);
+      }
+    };
+
+    fetchLeistungenData();
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-600 text-xl">error occurred:{error}</div>
+      </div>
+    );
+  }
+
+  if (!pageData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">لا توجد بيانات متاحة</div>
+      </div>
+    );
+  }
+
+  // Extract data from API response
+  const { heroSection, services, kontaktSection } = pageData;
+
+  // Filter services that have both title and content
+  const validServices = services.filter(service => 
+    service.serviceTitle && service.serviceSubTitle && service.serviceImage
+  );
+
   return (
     <div className="min-h-screen bg-white">
-      <style >{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -114,154 +257,82 @@ const  navigate = useNavigate();
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
-            src="/images/Enohm-GmbH-Leistungen.jpg" 
-            alt="Solar Panels"
+            src={`http://localhost:1337${heroSection.backgroundImage.url}`}
+            alt={heroSection.backgroundImage.alternativeText || "Hero Background"}
             className="w-full h-full object-cover"
           />
-        <div className="absolute inset-0 bg-black/40"></div>
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center min-h-screen py-12 lg:py-20">
             <div className="max-w-3xl space-y-6 lg:space-y-8">
-              <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold leading-tight text-white drop-shadow-lg animate-fade-in-up">
-               Unsere Vielfalt an Solaranlagen in Dresden und deutschlandweit
+<h1 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
+                {heroSection.title}
               </h1>
               
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed drop-shadow-md max-w-2xl animate-fade-in-up animation-delay-200">
-               Enohm GmbH ist Ihr Experte für individuell angepasste Solaranlagen für Firmen und Privatkunden in ganz Deutschland. Treten Sie heute mit unserem kompetenten Team in Kontakt, um mehr Informationen zu bekommen und Ihr eigenes Angebot anzufordern.
+              <p className="text-base sm:text-lg md:text-[16px] lg:text-[18px] text-white/90 leading-relaxed drop-shadow-md max-w-2xl animate-fade-in-up animation-delay-200">
+                {heroSection.subTitle}
               </p>
               
-            <div className="pt-4 animate-fade-in-up animation-delay-400">
-          <Button
-  onClick={() => navigate("/kontakt")}
-  variant="hero"
-  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
->
-  <span className="relative z-10">RUFEN SIE AN</span>
-  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
-</Button>
+              <div className="pt-4 animate-fade-in-up animation-delay-400">
+                <Button
+                  onClick={() => navigate("/kontakt")}
+                  variant="hero"
+                  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
+                >
+                  <span className="relative z-10">{heroSection.buttonText}</span>
+                  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-
-
-      {/* First Image-Text Section */}
-      <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] ">
-              <img 
-                src="/images/Enohm-GmbH-7.jpg" 
-                alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Right Side - Text */}
-            <div className="space-y-6 text-center lg:text-left animate-fade-in-right">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
-                Ihr Spezialist für Solaranlagen und Photovoltaik
-              </h3>
-              <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-Als führendes Unternehmen im Bereich erneuerbare Energien bietet Enohm GmbH individuell konzipierte Solaranlagen und Photovoltaiksysteme für private Haushalte und Unternehmen in ganz Deutschland an. Unsere nachhaltigen und energieeffizienten Lösungen bieten eine erhebliche Kosteneinsparung. Durch unsere langjährige Erfahrung und Expertise sind wir Ihr zuverlässiger Partner für umweltbewusste und zukunftssichere Energie.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Second Image-Text Section */}
-      <section className="py-12 md:py-16 lg:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Right Side - Text */}
-            <div className="space-y-6 text-center lg:text-left order-2 lg:order-1 animate-fade-in-left">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
-               Effiziente PV-Lösungen & Trockenbau
-              </h3>
-              <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-              Steigern Sie Ihre Energieeffizienz mit unseren PV-Lösungen und Trockenbau – Enohm GmbH ist Ihr kompetenter Partner für individuell konzipierte Solaranlagen und qualitativ hochwertige Trockenbau-Lösungen. Unsere Expertise gewährleistet nachhaltige Energiegewinnung und effiziente Innenausbauarbeiten für Privat- und Geschäftskunden in Deutschland. Nutzen Sie unsere langjährige Erfahrung und Präzision für zuverlässige und umweltfreundliche Lösungen, die Ihre Anforderungen perfekt erfüllt.
-
-</p>
-            </div>
-
-            {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] ">
-              <img 
-                src="/images/Enohm-GmbH-6.jpg" 
-                alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover "
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-   <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] ">
-              <img 
-                src="/images/Enohm-GmbH-9.jpg" 
-                alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Right Side - Text */}
-            <div className="space-y-6 text-center lg:text-left animate-fade-in-right">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
+      {/* Services Sections */}
+      {validServices.map((service, index) => {
+        const isEven = index % 2 === 0;
+        const bgColor = isEven ? "bg-gray-100" : "bg-white";
+        const animationClass = isEven ? "animate-fade-in-right" : "animate-fade-in-left";
+        
+        return (
+          <section key={service.id} className={`py-12 md:py-16 lg:py-24 ${bgColor}`}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                 
-Nachhaltige Solar- und Bau-Lösungen
-              </h3>
-              <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-Von Solaranlagen bis Elektrosanierung mit Enohm GmbH erhalten Sie auf Ihre Bedürfnisse abgestimmte Solaranlagen, hochwertige Trockenbau-Lösungen und professionelle Elektrosanierungen – alles aus einer Hand. Unsere Expertise in nachhaltiger Energiegewinnung, modernem Elektro- und Trockenbau macht uns zum idealen Partner für Privat- und Geschäftskunden. Vertrauen Sie auf unsere langjährige Erfahrung und Professionalität, um Ihre individuellen Anforderungen an Energieeffizienz, Bauqualität und Elektrosicherheit zu erfüllen. </p>
-            </div>
-          </div>
-        </div>
-      </section>
-        <section className="py-12 md:py-16 lg:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Right Side - Text */}
-            <div className="space-y-6 text-center lg:text-left order-2 lg:order-1 ">
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
-           Energieeffiziente Lösungen für Ihr Zuhause
-              </h3>
-              <p className="text-base md:text-lg text-gray-600 leading-relaxed">
- Innovative Energie- und Einrichtungslösungen erwarten Sie bei Enohm GmbH. Als Spezialist für Solaranlagen, Trockenbau, Elektrosanierung und Ladeneinrichtung bieten wir individuell auf Sie abgestimmte Lösungen. Unsere nachhaltigen Solaranlagen sorgen für effiziente Energieerzeugung, während unsere hochwertigen Trockenbau- und Elektrosanierungsarbeiten Qualität und Präzision garantieren. Mit modernem Design und Funktionalität schaffen wir einzigartige Ladeneinrichtungen. Vertrauen Sie auf unsere Erfahrung und Kompetenz für umweltbewusste und erstklassige Lösungen in den Bereichen Energie, Bau und Innenausstattung.</p>
-            </div>
+                {/* Image - Left for even, Right for odd */}
+                <div className={`w-full h-64 sm:h-80 lg:h-[400px] ${!isEven ? 'order-1 lg:order-2' : ''}`}>
+                  <img 
+                    src={`http://localhost:1337${service.serviceImage!.url}`}
+                    alt={service.serviceImage!.alternativeText || service.serviceTitle || "Service Image"} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-            {/* Left Side - Image */}
-            <div className="w-full h-64 sm:h-80 lg:h-[400px] order-1 lg:order-2 animate-fade-in-right">
-              <img 
-                src="/images/Enohm-GmbH-8.jpg" 
-                alt="Photovoltaik Systeme" 
-                className="w-full h-full object-cover "
-              />
+                {/* Text - Right for even, Left for odd */}
+                <div className={`space-y-6 text-center lg:text-left ${animationClass} ${!isEven ? 'order-2 lg:order-1' : ''}`}>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#1d4b73]">
+                    {service.serviceTitle}
+                  </h3>
+                  <p className="text-base md:text-lg text-gray-600 leading-relaxed">
+                    {service.serviceSubTitle}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })}
 
       {/* Contact CTA Section */}
       <section className="relative h-[500px] md:h-[600px] lg:h-[650px] bg-gradient-to-r from-blue-50 to-green-50 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
-            src="/images/enohm-gmbh6.jpg" 
-            alt="Solar Panels Contact"
+            src={`http://localhost:1337${kontaktSection.backgroundImage.url}`}
+            alt={kontaktSection.backgroundImage.alternativeText || "Contact Background"}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40"></div>
@@ -281,32 +352,27 @@ Von Solaranlagen bis Elektrosanierung mit Enohm GmbH erhalten Sie auf Ihre Bedü
                   <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                 </svg>
               </div>
-
-              <h2 className="text-2xl sm:text-2xl md:text-[40px] lg:text-4xl font-bold leading-tight drop-shadow-lg animate-fade-in-up animation-delay-200">
-                Kontaktieren Sie uns für eine kostenlose Beratung für Ihre individuelle Solaranlage!
+<h2 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
+                {kontaktSection.title}
               </h2>
 
               <div className="pt-4 animate-fade-in-up animation-delay-400">
-<Button
-  onClick={() => navigate("/kontakt")}
-  variant="hero"
-  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
->
-  <span className="relative z-10">RUFEN SIE AN</span>
-  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
-</Button>
-
-
+                <Button
+                  onClick={() => navigate("/kontakt")}
+                  variant="hero"
+                  className="group relative overflow-hidden text-lg px-7 py-6 bg-[#F2A057] text-white"
+                >
+                  <span className="relative z-10">{kontaktSection.buttonText}</span>
+                  <span className="absolute inset-0 bg-[#1d4b73] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-
-
       {/* Footer Info Section */}
-     <Bottombar/>
+      <Bottombar />
     </div>
   );
 };
