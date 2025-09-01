@@ -29,6 +29,7 @@ const borderAnimationStyles = `
     right: 0;
     width: 2px;
     height: 0;
+     top: -1px;
     background-color: #F2A057;
     transition: height 0.3s ease 0.15s;
     z-index: 1;
@@ -69,10 +70,11 @@ const borderAnimationStyles = `
 
   .border-left {
     position: absolute;
-    bottom: 0;
+
     left: 0;
     width: 2px;
     height: 0;
+      bottom: -1px;
     background-color: #F2A057;
     transition: height 0.3s ease;
     z-index: 1;
@@ -219,8 +221,8 @@ if (typeof document !== 'undefined') {
           onClick={() => handleNavClick(item.href)}
           className={`
             animated-border ${isActive ? 'active' : ''}
-            px-4 py-2 lg:px-6 lg:py-3 rounded-lg text-sm lg:text-base xl:text-lg font-medium
-            transition-all duration-300 whitespace-nowrap transform hover:scale-105
+            px-4 py-2 lg:px-2 lg:py-1 text-sm lg:text-xs xl:text-lg font-medium
+            transition-all duration-300  transform hover:scale-105
             ${isActive
               ? 'text-[#F2A057]'
               : 'text-[#1d4b73] hover:text-[#F2A057]'

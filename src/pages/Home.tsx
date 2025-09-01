@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 import Bottombar from "../components/Bottombar";
-
-
-// Step 1: تحديث الـ TypeScript Interfaces لتشمل الصور والـ CTA
 interface StrapiImageData {
   id: number;
   url: string;
