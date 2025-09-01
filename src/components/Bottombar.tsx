@@ -147,16 +147,17 @@ const Bottombar = () => {
 
   return (
     <>
+          <hr className="border-t border-black mb-8 w-full" />
       {/* Logo Section */}
-      <div className="w-full max-w-md mx-auto mt-8 px-4">
+      <div className="w-full max-w-md mx-auto  px-4">
         <img
-          src={logo ? `http://localhost:1337${logo}` : "/images/cropped-gif.webp"}
+          src={ `http://localhost:1337${logo}` }
           alt={`${companyName} Logo`}
           className="w-1/2 h-auto object-contain mx-auto"
         />
       </div>
 
-      <section className="py-12 md:py-16 bg-white">
+      <section className="pt-12 md:pt-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             

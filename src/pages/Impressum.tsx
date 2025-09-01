@@ -1,51 +1,170 @@
 import Bottombar from "../components/Bottombar";
+import { useState, useEffect } from "react";
+
+// TypeScript interfaces
+interface ImageData {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText: string | null;
+  caption: string | null;
+  width: number;
+  height: number;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: string | null;
+  provider: string;
+  provider_metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+interface ImpressumHeroSection {
+  id: number;
+  title: string;
+  telefone: string;
+  email: string;
+  Adresse: string;
+  heroImage: ImageData;
+}
+
+interface ImpressumPageData {
+  id: number;
+  documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  impressumHeroSection: ImpressumHeroSection;
+}
+
+interface ApiResponse {
+  data: ImpressumPageData;
+  meta: Record<string, any>;
+}
 
 const Impressum = () => {
+  const [pageData, setPageData] = useState<ImpressumPageData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImpressumData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:1337/api/impressum?&populate[impressumHeroSection][populate]=*"
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: ApiResponse = await response.json();
+        setPageData(data.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching impressum data:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setLoading(false);
+      }
+    };
+
+    fetchImpressumData();
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-600 text-xl">{error}</div>
+      </div>
+    );
+  }
+
+  if (!pageData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">No data available</div>
+      </div>
+    );
+  }
+
+  // Extract data from API response
+  const { impressumHeroSection } = pageData;
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-[100vh] bg-white">
       {/* Hero Section */}
-      <section className="relative h-[100vh] bg-gradient-to-r from-blue-50 to-green-50 overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
+      <section className="relative min-h-[50vh] sm:min-h-[70vh] md:min-h-screen bg-white overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[50vh] sm:h-full">   
           <img 
-            src="/images/Enohm-GmbH-1.jpg" 
-            alt="Solar Panels"
-            className="w-full h-full object-cover"
+            src={`http://localhost:1337${impressumHeroSection.heroImage?.url || '/images/Enohm-GmbH-1.jpg'}`}
+            alt={impressumHeroSection.heroImage?.alternativeText || "Solar Panels"}
+            className="w-full h-full object-cover object-top"
+            style={{ objectPosition: "50% 30%" }} 
           />
-          <div className="absolute inset-0 bg-black/40"></div>
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center min-h-[60vh] py-12 lg:py-10">
-        <div className="max-w-3xl h-[80vh] flex items-center">
-  <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold leading-tight text-white">
-    Impressum
-  </h1>
-</div>
-
+          <div className="flex items-center min-h-[60vh] sm:min-h-[70vh] md:min-h-screen py-8 sm:py-12 lg:py-20">
+            <div className="max-w-3xl space-y-6 lg:space-y-8">              
+              <h1 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
+                {impressumHeroSection?.title}
+              </h1>
+            </div>
           </div>
         </div>
       </section>
      
       {/* Content Section */}
-     <section className="lg:py-5 bg-white">
-  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <h1 className="text-2xl sm:text-3xl md:text-[35px] lg:text-[35px] py-5 font-bold text-[#303133]">
-      Impressum
-    </h1>
-       
+      <section className="lg:py-5 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <h1 className="text-2xl sm:text-3xl md:text-[35px] lg:text-[35px] py-5 font-bold text-[#303133]">
+            {impressumHeroSection?.title}
+          </h1>
+             
           <div className="prose prose-lg max-w-none">
-               
+                 
             {/* Angaben gemäß § 5 TMG */}
             <div className="mb-12">
               <h1 className="text-[40px] font-custom font-bold text-[#1d4b73] mb-6">Angaben gemäß § 5 TMG</h1>
               <div className="p-6 rounded-lg">
-                <p className="text-[#585858] leading-relaxed">
-                Enohm GmbH<br/>
-                Wallstr. 17<br/>
-                  01067 Dresden, Germany
-                </p>
+                <div className="text-[#585858] leading-relaxed">
+                  {impressumHeroSection.Adresse.split(' ').map((part, index, array) => {
+                    if (part === 'Enohm') {
+                      return <span key={index}>{part} {array[index + 1]}<br/></span>;
+                    }
+                    if (part === 'GmbH') {
+                      return null;
+                    }
+                    if (part === 'Wallstr.') {
+                      return <span key={index}>{part} {array[index + 1]}<br/></span>;
+                    }
+                    if (part === '17') {
+                      return null;
+                    }
+                    if (part === '01067') {
+                      return <span key={index}>{part} {array[index + 1]}, {array[index + 2]}</span>;
+                    }
+                    if (['Dresden,', 'Germany'].includes(part)) {
+                      return null;
+                    }
+                    return null;
+                  })}
+                </div>
                 <p className="text-[#585858] leading-relaxed mt-4">
                   Handelsregister:
                 </p>
@@ -57,8 +176,8 @@ const Impressum = () => {
               <h1 className="text-[40px] font-custom font-bold text-[#1d4b73] mb-6">Kontakt</h1>
               <div className="p-6 rounded-lg">
                 <p className="text-[#585858] leading-relaxed">
-                  <strong>Telefon:</strong> 015226677700<br/>
-                  <strong>E-mail:</strong> info@enohm.de
+                  <strong>Telefon:</strong> {impressumHeroSection.telefone}<br/>
+                  <strong>E-mail:</strong> <a href={`mailto:${impressumHeroSection.email}`} className="text-blue-600 hover:underline">{impressumHeroSection.email}</a>
                 </p>
               </div>
             </div>

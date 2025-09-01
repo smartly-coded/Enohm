@@ -82,7 +82,79 @@ interface ApiResponse {
   data: LeistungenPageData;
   meta: Record<string, any>;
 }
+const LoadingState = () => (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f9fa'
+  }}>
+    <div style={{
+      textAlign: 'center',
+      color: '#1d4b73'
+    }}>
+      <div style={{
+        width: '40px',
+        height: '40px',
+        border: '4px solid #e3e3e3',
+        borderTop: '4px solid #1d4b73',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+        margin: '0 auto 20px'
+      }}></div>
+      <p>Laden...</p>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  </div>
+);
 
+// Step 3: Error Component
+const ErrorState = ({ message, onRetry }: { message: string; onRetry: () => void }) => (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f9fa',
+    padding: '20px'
+  }}>
+    <div style={{
+      textAlign: 'center',
+      color: '#dc3545',
+      maxWidth: '500px'
+    }}>
+      <h2 style={{ marginBottom: '20px', color: '#1d4b73' }}>Fehler beim Laden</h2>
+      <p style={{ marginBottom: '30px', color: '#666' }}>{message}</p>
+      <button 
+        onClick={onRetry}
+        style={{
+          backgroundColor: '#F2A057',
+          color: 'white',
+          border: 'none',
+          padding: '12px 24px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          fontWeight: 'bold'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#1d4b73';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#F2A057';
+        }}
+      >
+        Erneut versuchen
+      </button>
+    </div>
+  </div>
+);
 const Leistungen = () => {
   const navigate = useNavigate();
   const [pageData, setPageData] = useState<LeistungenPageData | null>(null);
@@ -115,20 +187,14 @@ const Leistungen = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-gray-600 text-xl">Loading...</div>
-      </div>
-    );
+    return (<LoadingState/>);
   }
 
   // Error state
   if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-red-600 text-xl">error occurred:{error}</div>
-      </div>
-    );
+    return (<ErrorState    message={`Fehler beim Laden der Startseite: ${error}`}
+        onRetry={() => window.location.reload()
+    } />);
   }
 
   if (!pageData) {
@@ -141,7 +207,14 @@ const Leistungen = () => {
 
   // Extract data from API response
   const { heroSection, services, kontaktSection } = pageData;
+ const getImageUrl = (imageData: Image | null | undefined, ) => {
+    if (imageData?.url) {
+      return imageData.url.startsWith('http') 
+        ? imageData.url 
+        : `http://localhost:1337${imageData.url}`;
+    }
 
+  };
   // Filter services that have both title and content
   const validServices = services.filter(service => 
     service.serviceTitle && service.serviceSubTitle && service.serviceImage
@@ -253,11 +326,11 @@ const Leistungen = () => {
       `}</style>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-r from-blue-50 to-green-50 overflow-hidden">
+       <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-screen bg-gradient-to-r from-blue-50 to-green-50 overflow-hidden">
         {/* Background Image */}
-        <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-[50vh] sm:h-full">
           <img 
-            src={`http://localhost:1337${heroSection.backgroundImage.url}`}
+            src={getImageUrl(heroSection.backgroundImage)}
             alt={heroSection.backgroundImage.alternativeText || "Hero Background"}
             className="w-full h-full object-cover"
           />
@@ -266,17 +339,17 @@ const Leistungen = () => {
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center min-h-screen py-12 lg:py-20">
-            <div className="max-w-3xl space-y-6 lg:space-y-8">
+          <div className="flex items-center min-h-[60vh] sm:min-h-[70vh] md:min-h-screen py-8 sm:py-12 lg:py-20">
+        <div className="max-w-xl space-y-6  lg:space-y-8 ">              
 <h1 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
                 {heroSection.title}
               </h1>
               
-              <p className="text-base sm:text-lg md:text-[16px] lg:text-[18px] text-white/90 leading-relaxed drop-shadow-md max-w-2xl animate-fade-in-up animation-delay-200">
+              <p className="text-base sm:text-lg md:text-[16px] lg:text-[18px] text-white/90 leading-relaxed drop-shadow-md max-w-2xl animate-fade-in-up animation-delay-200"> 
                 {heroSection.subTitle}
               </p>
               
-              <div className="pt-4 animate-fade-in-up animation-delay-400">
+              <div className=" lg:pt-4 animate-fade-in-up animation-delay-400">
                 <Button
                   onClick={() => navigate("/kontakt")}
                   variant="hero"

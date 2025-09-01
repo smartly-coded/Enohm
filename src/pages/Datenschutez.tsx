@@ -1,29 +1,129 @@
 import Bottombar from "../components/Bottombar";
+import { useState, useEffect } from "react";
+
+// TypeScript interfaces
+interface ImageData {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText: string | null;
+  caption: string | null;
+  width: number;
+  height: number;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: string | null;
+  provider: string;
+  provider_metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+interface DatenschutzData {
+  id: number;
+  title: string;
+  telefone: string;
+  email: string;
+  Adresse: string;
+  heroImage: ImageData;
+}
+
+interface DatenschutzPageData {
+  id: number;
+  documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  Datenschutez: DatenschutzData;
+}
+
+interface ApiResponse {
+  data: DatenschutzPageData;
+  meta: Record<string, any>;
+}
 
 const Datenschutz = () => {
+  const [pageData, setPageData] = useState<DatenschutzPageData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDatenschutzData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:1337/api/datenschutz?&populate[Datenschutez][populate]=*"
+        );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: ApiResponse = await response.json();
+        setPageData(data.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching datenschutz data:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setLoading(false);
+      }
+    };
+
+    fetchDatenschutzData();
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-600 text-xl">{error}</div>
+      </div>
+    );
+  }
+
+  if (!pageData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600 text-xl">No data available</div>
+      </div>
+    );
+  }
+
+  // Extract data from API response
+  const { Datenschutez } = pageData;
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[100vh] bg-gradient-to-r from-blue-50 to-green-50 overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img 
-            src="/images/Enohm-GmbH-1.jpg" 
-            alt="Solar Panels"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30"></div>
-        </div>
+        <section className="relative min-h-[50vh] sm:min-h-[70vh] md:min-h-screen bg-white overflow-hidden">
+   <div className="absolute top-0 left-0 w-full h-[50vh] sm:h-full">   
+    <img 
+      src={`http://localhost:1337${Datenschutez.heroImage?.url || '/images/Enohm-GmbH-1.jpg'}`}
+      alt={Datenschutez.heroImage?.alternativeText || "Solar Panels"}
+      className="w-full h-full object-cover object-top"
+      style={{ objectPosition: "50% 30%" }} 
+    />
+     
+  </div>
         
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-full py-12">
-                   <div className="max-w-3xl h-[80vh] flex items-center">
-  <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold leading-tight text-white">
-                Datenschutz
-              </h1>
-            </div>
-          </div>
-        </div>
+       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center min-h-[60vh] sm:min-h-[70vh] md:min-h-screen py-8 sm:py-12 lg:py-20">
+        <div className="max-w-3xl space-y-6  lg:space-y-8 ">              
+<h1 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
+  {Datenschutez?.title }
+</h1></div></div></div>
       </section>
 
       {/* Content Section */}
@@ -95,7 +195,7 @@ const Datenschutz = () => {
                   Der Einsatz des Hosters erfolgt zum Zwecke der Vertragserfüllung gegenüber unseren potenziellen und bestehenden Kunden (Art. 6 Abs. 1 lit. b DSGVO) und im Interesse einer sicheren, schnellen und effizienten Bereitstellung unseres Online-Angebots durch einen professionellen Anbieter (Art. 6 Abs. 1 lit. f DSGVO). Unser Hoster wird Ihre Daten nur insoweit verarbeiten, wie dies zur Erfüllung seiner Leistungspflichten erforderlich ist und unsere Weisungen in Bezug auf diese Daten befolgen.
                 </p>
                   <p className="font-semibold text-[#585858] mb-2">Als Hoster ist eingesetzt:</p>
-                  <p className="text-[#585858]-700">
+                  <p className="text-[#585858]">
                     IONOS SE<br/>
                     Elgendorfer Str. 57<br/>
                     56410 Montabaur
@@ -124,23 +224,51 @@ const Datenschutz = () => {
                 <div>
                   <h3 className="text-xl font-bold text-[#585858] mb-4">Hinweis zur verantwortlichen Stelle</h3>
                   <p className="text-[#585858] leading-relaxed mb-4">Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
-                  <p className="text-[#585858]">
-                    Enohm GmbH<br/>
-                    Wallstr. 17, 01067 Dresden, Germany<br/>
-                    Tel.: <a href="tel:+4915226677700" className="text-blue-600 hover:underline">015226677700</a><br/>
-                    E-Mail: <a href="mailto:info@enohm.de" className="text-blue-600 hover:underline">info@enohm.de</a>
-                  </p>
+                        <div className="text-[#585858]">
+                    {Datenschutez.Adresse.split(' ').map((part, index, array) => {
+                      if (part === 'Enohm') {
+                        return <span key={index}>{part} {array[index + 1]}<br/></span>;
+                      }
+                      if (part === 'GmbH') {
+                        return null;
+                      }
+                      if (part === 'Wallstr.') {
+                        return <span key={index}>{part} {array[index + 1]} {array[index + 2]} {array[index + 3]} {array[index + 4]}<br/></span>;
+                      }
+                      if (['17', '01067', 'Dresden,', 'Germany'].includes(part)) {
+                        return null;
+                      }
+                      return null;
+                    })}
+                    Tel.: <a href={`tel:+49${Datenschutez.telefone}`} className="text-blue-600 hover:underline">{Datenschutez.telefone}</a><br/>
+                    E-Mail: <a href={`mailto:${Datenschutez.email}`} className="text-blue-600 hover:underline">{Datenschutez.email}</a>
+                  </div>
+              
                 </div>
 
                 <div>
                   <h3 className="text-xl font-bold text-[#585858] mb-4">Gesetzlich vorgeschriebener Datenschutzbeauftragter</h3>
                   <p className="text-[#585858] leading-relaxed mb-4">Wir haben für unser Unternehmen einen Datenschutzbeauftragten bestellt.</p>
-                  <p className="text-[#585858]">
-                    Enohm GmbH<br/>
-                    Wallstr. 17, 01067 Dresden, Germany<br/>
-                    Tel.: <a href="tel:+4915226677700" className="text-blue-600 hover:underline">015226677700</a><br/>
-                    E-Mail: <a href="mailto:info@enohm.de" className="text-blue-600 hover:underline">info@enohm.de</a>
-                  </p>
+                         <div className="text-[#585858]">
+                    {Datenschutez.Adresse.split(' ').map((part, index, array) => {
+                      if (part === 'Enohm') {
+                        return <span key={index}>{part} {array[index + 1]}<br/></span>;
+                      }
+                      if (part === 'GmbH') {
+                        return null;
+                      }
+                      if (part === 'Wallstr.') {
+                        return <span key={index}>{part} {array[index + 1]}, {array[index + 2]} {array[index + 3]}, {array[index + 4]}<br/></span>;
+                      }
+                      if (['17', '01067', 'Dresden,', 'Germany'].includes(part)) {
+                        return null;
+                      }
+                      return null;
+                    })}
+                    Tel.: <a href={`tel:+49${Datenschutez.telefone}`} className="text-blue-600 hover:underline">{Datenschutez.telefone}</a><br/>
+                    E-Mail: <a href={`mailto:${Datenschutez.email}`} className="text-blue-600 hover:underline">{Datenschutez.email}</a>
+                  </div>
+              
                 </div>
 
                 <div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 
 export default function FlexibleNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -115,10 +115,7 @@ if (typeof document !== 'undefined') {
       updateActiveItem();
     };
 
-    // Listen for programmatic navigation
-    const handleLocationChange = () => {
-      updateActiveItem();
-    };
+   
 
     window.addEventListener('popstate', handlePopState);
     

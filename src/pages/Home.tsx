@@ -55,12 +55,7 @@ interface ServicesData {
   subTitle: string;
 }
 
-interface CtaSectionData {
-  id: number;
-  title: string;
 
-  backgroundImage?: StrapiImageData | null;
-}
 
 interface StartseiteData {
   id: number;
@@ -74,7 +69,7 @@ interface StartseiteData {
   About: AboutData[];
   Kontakt: KontaktData;
   services?: ServicesData; // إضافة Services section
-  ctaSection?: CtaSectionData; // إضافة CTA section
+
 }
 
 interface StrapiResponse {
@@ -319,33 +314,7 @@ const Home = () => {
           animation: slideInFromBottom 1s ease-out forwards;
         }
         
-        .animation-delay-200 {
-          animation-delay: 0.2s;
-        }
-        
-        .animation-delay-400 {
-          animation-delay: 0.4s;
-        }
-        
-        .animation-delay-600 {
-          animation-delay: 0.6s;
-        }
-        
-        .hover-scale {
-          transition: transform 0.3s ease;
-        }
-        
-        .hover-scale:hover {
-          transform: scale(1.05);
-        }
-        
-        .hover-shadow {
-          transition: box-shadow 0.3s ease;
-        }
-        
-        .hover-shadow:hover {
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
+
       `}</style>
 
       {/* Hero Section - Step 8: استخدام البيانات من الـ API مع الصور */}
@@ -367,10 +336,6 @@ const Home = () => {
 <h1 className="text-2xl sm:text-2xl md:text-[45px] lg:text-4xl font-bold text-white drop-shadow-lg animate-fade-in-up leading-snug md:leading-[55px]">
   {heroSection?.title || "Solarlösungen für Ihre effiziente Energieversorgung - Enohm GmbH"}
 </h1>
-
-
-              
-              {/* Subtitle - Mobile optimized, Desktop EXACTLY original, Large screens enhanced */}
               <p className="text-base sm:text-lg md:text-[16px] lg:text-[18px] text-white/90 leading-relaxed drop-shadow-md max-w-2xl animate-fade-in-up animation-delay-200">     
                 {heroSection?.subTitle || "Unser Team ist auf Solaranlagen und Photovoltaik-Systeme in ganz Deutschland spezialisiert, um Ihre Bedürfnisse nach nachhaltiger Energie zuverlässig zu erfüllen. Fordern Sie heute noch ein unverbindliches Angebot an."}               </p>  
               

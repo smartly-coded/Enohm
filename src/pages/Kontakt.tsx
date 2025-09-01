@@ -251,38 +251,38 @@ const Kontakt = () => {
       `}</style>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen w-full bg-white overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 w-full h-full">
-          <img 
-            src={`http://localhost:1337${kontaktHeroSection.backgroundImage.url}`}
-            alt={kontaktHeroSection.backgroundImage.alternativeText || "Contact Hero Background"}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
+     <section className="relative h-[60vh] md:min-h-screen w-full bg-white overflow-hidden">          
+  {/* Background Image */}           
+  <div className="absolute top-0 left-0 w-full h-[50vh] sm:h-full">           
+    <img              
+      src={`http://localhost:1337${kontaktHeroSection.backgroundImage.url}`}             
+      alt={kontaktHeroSection.backgroundImage.alternativeText || "Contact Hero Background"}             
+      className="w-full h-full object-cover"           
+    />           
+    <div className="absolute inset-0 bg-black/40"></div>         
+  </div>          
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center min-h-[60vh] py-12 lg:py-20">
-            <div className="max-w-3xl space-y-6 lg:space-y-10">
-              <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold font-custom text-white drop-shadow-lg animate-fade-in-up">
-                {kontaktHeroSection.title.split(' ').map((word, index, array) => {
-                  // Add line breaks at logical points for better formatting
-                  if (word === 'verlässliche' || word === 'in' || word === 'Sie') {
-                    return (
-                      <span key={index}>
-                        {word}
-                        {index < array.length - 1 && <br />}
-                      </span>
-                    );
-                  }
-                  return word + (index < array.length - 1 ? ' ' : '');
-                })}
-              </h1> 
-            </div>
-          </div>
-        </div>
-      </section>
+  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">           
+    <div className="flex items-start sm:items-center min-h-[60vh] pt-8 sm:py-12 lg:py-20">             
+      <div className="max-w-3xl space-y-6 lg:space-y-10">               
+        <h1 className="text-2xl sm:text-3xl md:text-[45px] lg:text-5xl font-bold font-custom text-white drop-shadow-lg animate-fade-in-up leading-normal md:leading-tight">                 
+          {kontaktHeroSection.title.split(' ').map((word, index, array) => {                   
+            // Add line breaks at logical points for better formatting                   
+            if (word === 'verlässliche' || word === 'in' || word === 'Sie') {                     
+              return (                       
+                <span key={index}>                         
+                  {word}                         
+                  {index < array.length - 1 && <br />}                       
+                </span>                     
+              );                   
+            }                   
+            return word + (index < array.length - 1 ? ' ' : '');                 
+          })}               
+        </h1>              
+      </div>           
+    </div>         
+  </div>       
+</section>
           
       <section className="py-12 md:py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -312,7 +312,7 @@ const Kontakt = () => {
       <Contactform />
 
       {/* Map Section - Full Width */}
-      <section className="full-width-section py-12 md:py-16 lg:py-24 bg-[#f2f2f2]">
+      <section className="full-width-section pt-12 md:pt-16 lg:pt-24 bg-[#f2f2f2]">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#1d4b73] mb-6">
